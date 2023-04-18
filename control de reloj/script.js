@@ -27,8 +27,8 @@ colores = {
   "1": ["#8B0000", "#FFFFFF"]
 }
 
-function sumarSegundos(){
-  return (horas*60*60) + (minutos*60) + segundos;
+function sumarSegundos() {
+  return (horas * 60 * 60) + (minutos * 60) + segundos;
 }
 
 function inicializarReloj() {
@@ -39,15 +39,15 @@ function inicializarReloj() {
 }
 
 function getParam(id) {
-  return urlParams.get(id);
+  parametro = urlParams.get(id)
+  if (parametro) {
+    return parametro
+  }
+  return "0";
 }
 
 function toInt(data) {
-  try {
-    return parseInt(data);
-  } catch (error) {
-    return 0;
-  }
+  return parseInt(data);
 }
 
 function elemento(id) {
@@ -87,31 +87,31 @@ function displayTimeLeft(seconds) {
   calcularColores();
   actualizarSpans();
 }
-inversorColores= false;
-function calcularColores(){
+inversorColores = false;
+function calcularColores() {
   try {
     sumaActual = sumarSegundos();
-    valor = Math.round(sumaActual*10/sumaInicial);
+    valor = Math.round(sumaActual * 10 / sumaInicial);
     valor = valor.toString();
-    if(sumaActual < limiteInvertirColores*60){
-      if(inversorColores){
+    if (sumaActual < limiteInvertirColores * 60) {
+      if (inversorColores) {
         colorFondo = colores[valor][0];
         colorTexto = colores[valor][1];
       }
-      else{
+      else {
         colorFondo = colores[valor][1];
         colorTexto = colores[valor][0];
       }
       inversorColores = !inversorColores;
     }
-    else{
+    else {
       colorFondo = colores[valor][0];
       colorTexto = colores[valor][1];
     }
-    document.querySelector("body").style.backgroundColor =  colorFondo;
-    document.querySelector(".contador").style.color =  colorTexto;
+    document.querySelector("body").style.backgroundColor = colorFondo;
+    document.querySelector(".contador").style.color = colorTexto;
   } catch (error) {
-    
+
   }
 }
 
