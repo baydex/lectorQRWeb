@@ -1,10 +1,40 @@
 let countdown;
-const timerDisplay = document.querySelector('#timer');
-const startButton = document.querySelector('#start');
-const pauseButton = document.querySelector('#pause');
-const resetButton = document.querySelector('#reset');
-const hoursInput = document.querySelector('#hours');
-const minutesInput = document.querySelector('#minutes');
+
+const horasSpan = elemento("hora");
+const minutosSpan = elemento("minuto");
+const segundosSpan = elemento("segundo");
+
+var statusBoton = true;
+const urlParams = new URLSearchParams(window.location.search);
+var horas;
+var minutos;
+var segundos;
+inicializarReloj();
+
+
+function inicializarReloj() {
+  horas = toInt(getParam('horas'));
+  minutos = toInt(getParam('minutos'));
+  segundos = 0;
+  reiniciarContador();
+}
+
+function getParam(id) {
+  return urlParams.get(id);
+}
+
+function toInt(data) {
+  try {
+    return parseInt(data);
+  } catch (error) {
+    return 0;
+  }
+}
+
+function elemento(id) {
+  return document.getElementById(id);
+}
+
 
 function timer(seconds) {
   clearInterval(countdown);
@@ -31,22 +61,64 @@ function displayTimeLeft(seconds) {
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainderSeconds = seconds % 60;
   const display = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainderSeconds < 10 ? '0' : ''}${remainderSeconds}`;
-  timerDisplay.textContent = display;
+
+  horas = hours;
+  minutos = minutes;
+  segundos = remainderSeconds;
+
+  actualizarSpans();
 }
 
-startButton.addEventListener('click', () => {
-  const hours = parseInt(hoursInput.value);
-  const minutes = parseInt(minutesInput.value);
-  timer((hours * 3600) + (minutes * 60));
+function actualizarSpans() {
+  insertarValorSpan(horasSpan, horas);
+  insertarValorSpan(minutosSpan, minutos);
+  insertarValorSpan(segundosSpan, segundos);
+}
+
+function insertarValorSpan(elemento, valor) {
+  elemento.textContent = formatearSpan(valor);
+}
+
+function formatearSpan(valor) {
+  var numeroConFormato;
+  if (valor < 10) {
+    numeroConFormato = `0${valor}`;
+  }
+  else {
+    numeroConFormato = valor;
+  }
+  return numeroConFormato;
+}
+
+window.addEventListener("keydown", function (event) {
+  if (event.code === "Space") {
+    controladorReloj();
+  }
 });
 
-pauseButton.addEventListener('click', () => {
-  clearInterval(countdown);
+window.addEventListener("click", function (event) {
+  controladorReloj();
 });
 
-resetButton.addEventListener('click', () => {
-  clearInterval(countdown);
-  displayTimeLeft(0);
-  hoursInput.value = 0;
-  minutesInput.value = 0;
+
+elemento("boton-reiniciar").addEventListener("click", function (event) {
+  reiniciarContador();
 });
+
+function controladorReloj() {
+  if (statusBoton == true) {
+    timer((horas * 3600) + (minutos * 60) + segundos);
+  }
+  else {
+    clearInterval(countdown);
+  }
+  statusBoton = !statusBoton;
+}
+
+function reiniciarContador() {
+  clearInterval(countdown);
+  horas = toInt(getParam('horas'));
+  minutos = toInt(getParam('minutos'));
+  segundos = 0;
+  actualizarSpans();
+}
