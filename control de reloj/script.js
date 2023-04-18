@@ -1,3 +1,5 @@
+let limiteInvertirColores = 1;
+
 let countdown;
 
 const horasSpan = elemento("hora");
@@ -10,12 +12,29 @@ var horas;
 var minutos;
 var segundos;
 inicializarReloj();
+sumaInicial = sumarSegundos();
 
+colores = {
+  "10": ["#00FF00", "#FFFFFF"],
+  "9": ["#32CD32", "#FFFFFF"],
+  "8": ["#7CFC00", "#FFFFFF"],
+  "7": ["#9ACD32", "#FFFFFF"],
+  "6": ["#ADFF2F", "#000000"],
+  "5": ["#FFFF00", "#000000"],
+  "4": ["#FFA500", "#FFFFFF"],
+  "3": ["#FF4500", "#FFFFFF"],
+  "2": ["#FF0000", "#FFFFFF"],
+  "1": ["#8B0000", "#FFFFFF"]
+}
+
+function sumarSegundos(){
+  return (horas*60*60) + (minutos*60) + segundos;
+}
 
 function inicializarReloj() {
   horas = toInt(getParam('horas'));
   minutos = toInt(getParam('minutos'));
-  segundos = 0;
+  segundos = toInt(getParam('segundos'));
   reiniciarContador();
 }
 
@@ -65,8 +84,35 @@ function displayTimeLeft(seconds) {
   horas = hours;
   minutos = minutes;
   segundos = remainderSeconds;
-
+  calcularColores();
   actualizarSpans();
+}
+inversorColores= false;
+function calcularColores(){
+  try {
+    sumaActual = sumarSegundos();
+    valor = Math.round(sumaActual*10/sumaInicial);
+    valor = valor.toString();
+    if(sumaActual < limiteInvertirColores*60){
+      if(inversorColores){
+        colorFondo = colores[valor][0];
+        colorTexto = colores[valor][1];
+      }
+      else{
+        colorFondo = colores[valor][1];
+        colorTexto = colores[valor][0];
+      }
+      inversorColores = !inversorColores;
+    }
+    else{
+      colorFondo = colores[valor][0];
+      colorTexto = colores[valor][1];
+    }
+    document.querySelector("body").style.backgroundColor =  colorFondo;
+    document.querySelector(".contador").style.color =  colorTexto;
+  } catch (error) {
+    
+  }
 }
 
 function actualizarSpans() {
@@ -119,6 +165,6 @@ function reiniciarContador() {
   clearInterval(countdown);
   horas = toInt(getParam('horas'));
   minutos = toInt(getParam('minutos'));
-  segundos = 0;
+  segundos = toInt(getParam('segundos'));
   actualizarSpans();
 }
